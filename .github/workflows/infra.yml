@@ -45,12 +45,18 @@ jobs:
 
       - name: Terraform Plan
         if: ${{ inputs.action == 'plan' }}
-        run: terraform plan
+        run: | 
+            cd infra 
+            terraform plan
 
       - name: Terraform Apply
         if: ${{ inputs.action == 'apply' }}
-        run: terraform apply -auto-approve
+        run: | 
+            cd infra 
+            terraform apply -auto-approve
 
       - name: Terraform Destroy
         if: ${{ inputs.action == 'destroy' }}
-        run: terraform destroy -auto-approve
+        run: | 
+             cd infra
+             terraform destroy -auto-approve
