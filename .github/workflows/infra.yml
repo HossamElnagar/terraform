@@ -5,16 +5,26 @@ on:
   workflow_dispatch:
     inputs:
       action:
+        description: Terraform Action
         type: choice
         options:
+          - plan
           - apply
           - destroy
-          - plan
+        required: true
+
+      env:
+        description: Environment
+        type: choice
+        options:
+          - dev
+          - prod
+        required: true
 
 jobs:
   terraform-action:
     runs-on: ubuntu-latest
-
+    environment: ${{ inputs.env}}
     steps:
       - name: Clone Github Repo
         uses: actions/checkout@v4
@@ -23,7 +33,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: us-west-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
