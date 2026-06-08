@@ -46,29 +46,25 @@ resource "aws_security_group" "web_sg" {
 
   ingress {
     description = "SSH from anywhere"
-    from_port   = 22
-    to_port     = 22
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tc"
   }
 }
 
-# 6. EC2 Instance (السيرفر داخل الـ Subnet والـ Security Group)
 resource "aws_instance" "web_server" {
-  ami           = "ami-0c55b159cbfafe1f0" # ملاحظة: تأكدي أن الـ AMI متوافق مع منطقة eu-west-1 (هذا الـ AMI كمثال لـ Ubuntu)
+  ami           = dat.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.public_subnet.id
   
-  # ربط السيرفر بالـ Security Group الذي أنشأناه
   vpc_security_group_ids = [aws_security_group.web_sg.id]
-
+  user_id   =  file("init-script.sh")
   tags = {
     Name = "${var.vpc_name}-web-server"
   }
