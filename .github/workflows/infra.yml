@@ -24,10 +24,16 @@ on:
 jobs:
   terraform-action:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.env}}
+    environment: ${{ inputs.env }}
+
+    defaults:
+      run:
+        working-directory: infra
+
     steps:
-      - name: Clone Github Repo
+      - name: Checkout Repo
         uses: actions/checkout@v4
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -39,24 +45,19 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        run: | 
-          cd infra
-          terraform init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
 
       - name: Terraform Plan
         if: ${{ inputs.action == 'plan' }}
-        run: | 
-            cd infra 
-            terraform plan
+        run: terraform plan #-var-file="${{ inputs.env }}.tfvars"
 
       - name: Terraform Apply
         if: ${{ inputs.action == 'apply' }}
-        run: | 
-            cd infra 
-            terraform apply -auto-approve
+        run: terraform apply -auto-approve #-var-file="${{ inputs.env }}.tfvars"
 
       - name: Terraform Destroy
         if: ${{ inputs.action == 'destroy' }}
-        run: | 
-             cd infra
-             terraform destroy -auto-approve
+        run: terraform destroy -auto-approve #-var-file="${{ inputs.env }}.tfvars"
