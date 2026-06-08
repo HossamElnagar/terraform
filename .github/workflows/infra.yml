@@ -39,7 +39,9 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        run: terraform init
+        run: | 
+          cd infra
+          terraform init
 
       - name: Terraform Plan
         if: ${{ inputs.action == 'plan' }}
